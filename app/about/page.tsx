@@ -6,7 +6,7 @@ import { org } from '@/lib/site-data'
 
 export const metadata: Metadata = {
   title: `About — ${org.shortName}`,
-  description: `Learn about ${org.name}: our story and timeline since 2016.`,
+  description: `Discover ${org.shortName}'s mission, vision, and core pillars — shaping the economic minds of tomorrow at ${org.university}.`,
 }
 
 export default function AboutPage() {

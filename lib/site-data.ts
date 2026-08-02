@@ -53,6 +53,7 @@ export const navLinks: NavLink[] = [
   { id: 'about', label: 'About', href: '/about' },
   { id: 'why', label: 'Why Join', href: '/why-join' },
   { id: 'events', label: 'Events', href: '/events' },
+  { id: 'gallery', label: 'Gallery', href: '/gallery' },
   { id: 'members', label: 'Members', href: '/members' },
   { id: 'contact', label: 'Contact', href: '/contact' },
 ]
@@ -167,8 +168,8 @@ export const events: EventItem[] = [
 ]
 
 export const contact = {
-  phone: '+880 1700-000000',
-  email: 'info@uiujef.org',
+  phone: '01703208163',
+  email: 'uiujef7@gmail.com',
   location: 'United International University, Madani Ave, Badda, Dhaka 1212, Bangladesh',
   mapHref: 'https://maps.google.com/?q=United+International+University+Dhaka',
 }
@@ -194,6 +195,7 @@ export const footerColumns: { id: string; title: string; links: NavLink[] }[] = 
     title: 'Quick Links',
     links: [
       { id: 'events', label: 'Events', href: '/events' },
+      { id: 'gallery', label: 'Gallery', href: '/gallery' },
       { id: 'members', label: 'Members', href: '/members' },
       { id: 'contact', label: 'Contact', href: '/contact' },
     ],
