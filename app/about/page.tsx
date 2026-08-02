@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { AboutSection } from '@/components/about-section'
+import { JoinCtaBand } from '@/components/join-cta-band'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteNav } from '@/components/site-nav'
 import { org } from '@/lib/site-data'
@@ -15,6 +16,7 @@ export default function AboutPage() {
       <SiteNav />
       <main className="flex-1">
         <AboutSection />
+        <JoinCtaBand />
       </main>
       <SiteFooter />
     </div>

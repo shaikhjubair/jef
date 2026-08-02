@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Mail, MapPin, Phone } from 'lucide-react'
+import { Mail, MapPin, Phone } from 'lucide-react'
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from '@/components/brand-icons'
 import { contact, copyright, footerColumns, org, socials } from '@/lib/site-data'
 
@@ -12,28 +12,6 @@ const socialIcons = {
 export function SiteFooter() {
   return (
     <footer className="bg-navy-deep text-white">
-      {/* Join CTA band */}
-      <div className="border-b border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-14 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8 lg:py-16">
-          <div className="max-w-xl">
-            <h2 className="font-serif text-2xl font-bold text-balance sm:text-3xl">
-              Ready to join the forum?
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/60 sm:text-base">
-              Membership opens every semester. Tell us a little about yourself and we&apos;ll be in
-              touch.
-            </p>
-          </div>
-          <Link
-            href={org.ctaHref}
-            className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gold px-7 text-sm font-semibold text-white transition-colors duration-200 hover:bg-gold-soft sm:w-auto"
-          >
-            {org.ctaLabel}
-            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-      </div>
-
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,0.8fr)]">
           {/* Brand + contact */}

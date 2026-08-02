@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Award, LineChart, Mic, Users } from 'lucide-react'
 import { benefits, type BenefitIcon } from '@/lib/site-data'
 
@@ -25,22 +26,33 @@ export function WhyJoinSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map((benefit) => {
             const Icon = icons[benefit.icon]
             return (
-              <div
+              <article
                 key={benefit.id}
-                className="rounded-2xl border border-border bg-card p-6 transition-shadow duration-200 hover:shadow-lg hover:shadow-navy/5"
+                className="group relative min-h-[18rem] overflow-hidden rounded-2xl sm:min-h-[20rem]"
               >
-                <span className="inline-flex size-10 items-center justify-center rounded-xl bg-navy text-gold">
-                  <Icon className="size-5" aria-hidden="true" />
-                </span>
-                <h2 className="mt-4 text-base font-semibold text-navy">{benefit.title}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {benefit.description}
-                </p>
-              </div>
+                <Image
+                  src={benefit.bgImage}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-gradient-to-t from-navy-deep/95 via-navy-deep/75 to-navy/35"
+                />
+                <div className="relative flex h-full min-h-[18rem] flex-col justify-end p-6 sm:min-h-[20rem]">
+                  <span className="inline-flex size-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-gold backdrop-blur-sm">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <h2 className="mt-4 text-base font-semibold text-white">{benefit.title}</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-white/80">{benefit.description}</p>
+                </div>
+              </article>
             )
           })}
         </div>

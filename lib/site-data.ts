@@ -14,7 +14,13 @@
 
 export type Stat = { id: string; label: string; value: string }
 export type TimelineItem = { id: string; year: string; title: string; description: string }
-export type Benefit = { id: string; icon: BenefitIcon; title: string; description: string }
+export type Benefit = {
+  id: string
+  icon: BenefitIcon
+  title: string
+  description: string
+  bgImage: string
+}
 export type BenefitIcon = 'network' | 'research' | 'speaking' | 'career'
 export type EventItem = {
   id: string
@@ -113,24 +119,28 @@ export const benefits: Benefit[] = [
     icon: 'network',
     title: 'A Real Network',
     description: '500+ members and 200+ alumni across banking, development, and academia.',
+    bgImage: '/network.jpg',
   },
   {
     id: 'research',
     icon: 'research',
     title: 'Research That Ships',
     description: 'Co-author papers and policy briefs with faculty mentorship and peer review.',
+    bgImage: '/research.jpg',
   },
   {
     id: 'speaking',
     icon: 'speaking',
     title: 'Stage Time',
     description: 'Debate, present, and moderate at national summits and case competitions.',
+    bgImage: '/stage.jpg',
   },
   {
     id: 'career',
     icon: 'career',
     title: 'Career Runway',
     description: 'Workshops, internship referrals, and one-on-one guidance from working economists.',
+    bgImage: '/career.jpg',
   },
 ]
 
@@ -175,9 +185,24 @@ export const contact = {
 }
 
 export const socials: SocialLink[] = [
-  { id: 'linkedin', label: 'LinkedIn', href: 'https://linkedin.com', icon: 'linkedin' },
-  { id: 'facebook', label: 'Facebook', href: 'https://facebook.com', icon: 'facebook' },
-  { id: 'instagram', label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/jefuiu/',
+    icon: 'linkedin',
+  },
+  {
+    id: 'facebook',
+    label: 'Facebook',
+    href: 'https://www.facebook.com/JEFUIU',
+    icon: 'facebook',
+  },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    href: 'https://www.instagram.com/uiujef',
+    icon: 'instagram',
+  },
 ]
 
 export const footerColumns: { id: string; title: string; links: NavLink[] }[] = [
