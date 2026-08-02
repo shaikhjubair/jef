@@ -1,0 +1,102 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-navy-soft: var(--navy-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+:root {
+  color-scheme: light;
+
+  --radius: 0.75rem;
+
+  /* 3 core colors: Navy, White/neutrals, Brand Orange */
+  --navy-deep: oklch(0.19 0.05 261);
+  --navy: oklch(0.28 0.07 261);
+  --navy-soft: oklch(0.42 0.06 261);
+  --gold: #F26522;
+  --gold-soft: #FF7A3D;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.24 0.05 261);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.05 261);
+  --primary: oklch(0.28 0.07 261);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.97 0.005 261);
+  --secondary-foreground: oklch(0.28 0.07 261);
+  --muted: oklch(0.97 0.005 261);
+  --muted-foreground: oklch(0.5 0.02 261);
+  --accent: #F26522;
+  --accent-foreground: oklch(0.22 0.05 261);
+  --border: oklch(0.91 0.008 261);
+  --input: oklch(0.91 0.008 261);
+  --ring: #F26522;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer utilities {
+  /* Lightweight, GPU-friendly entrance animation (no JS animation library) */
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .animate-rise {
+    animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-rise {
+      animation: none;
+    }
+  }
+}
