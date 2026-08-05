@@ -1,4 +1,4 @@
-import { executiveHierarchy } from '@/data/members'
+import { executiveHierarchy, type Member } from '@/data/members'
 import { MemberCard } from '@/components/member-card'
 import { cn } from '@/lib/utils'
 
@@ -29,7 +29,11 @@ function TierRow({
   )
 }
 
-export function ExecutiveOrgChart() {
+interface ExecutiveOrgChartProps {
+  onMemberClick?: (member: Member) => void
+}
+
+export function ExecutiveOrgChart({ onMemberClick }: ExecutiveOrgChartProps) {
   const { president, vicePresident, tier3, tier4, departments } = executiveHierarchy
 
   return (
@@ -43,14 +47,14 @@ export function ExecutiveOrgChart() {
       <div className="relative flex flex-col items-center">
         {/* Tier 1 — President */}
         <div className="animate-reveal flex flex-col items-center">
-          <MemberCard member={president} variant="president" />
+          <MemberCard member={president} onClick={() => onMemberClick?.(president)} />
         </div>
 
         <OrgConnector />
 
         {/* Tier 2 — Vice President */}
         <div className="animate-reveal animate-reveal-delay-1 flex flex-col items-center">
-          <MemberCard member={vicePresident} variant="vice-president" />
+          <MemberCard member={vicePresident} onClick={() => onMemberClick?.(vicePresident)} />
         </div>
 
         <OrgConnector />
@@ -58,7 +62,7 @@ export function ExecutiveOrgChart() {
         {/* Tier 3 — Secretaries & Treasurer */}
         <TierRow className="animate-reveal animate-reveal-delay-1">
           {tier3.map((member) => (
-            <MemberCard key={member.id} member={member} variant="leadership" />
+            <MemberCard key={member.id} member={member} onClick={() => onMemberClick?.(member)} />
           ))}
         </TierRow>
 
@@ -67,7 +71,7 @@ export function ExecutiveOrgChart() {
         {/* Tier 4 — Joint & Organizational Secretary */}
         <TierRow className="animate-reveal animate-reveal-delay-2">
           {tier4.map((member) => (
-            <MemberCard key={member.id} member={member} variant="leadership" />
+            <MemberCard key={member.id} member={member} onClick={() => onMemberClick?.(member)} />
           ))}
         </TierRow>
 
@@ -96,7 +100,7 @@ export function ExecutiveOrgChart() {
                 </div>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                   {department.members.map((member) => (
-                    <MemberCard key={member.id} member={member} variant="compact" />
+                    <MemberCard key={member.id} member={member} onClick={() => onMemberClick?.(member)} />
                   ))}
                 </div>
               </div>

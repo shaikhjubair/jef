@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from '@/components/brand-icons'
@@ -13,14 +14,17 @@ export function SiteFooter() {
   return (
     <footer className="bg-navy-deep text-white">
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,0.8fr)]">
+        <div className="flex flex-col items-center text-center">
           {/* Brand + contact */}
-          <div>
+          <div className="flex flex-col items-center">
             <div className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-gold font-serif text-sm font-bold text-white">
-                JE
-              </span>
-              <span className="font-serif text-base font-bold">{org.shortName}</span>
+              <Image
+                src="/logo.png"
+                alt={org.name}
+                width={200}
+                height={48}
+                className="h-12 w-auto object-contain"
+              />
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">{org.name}</p>
 
@@ -76,36 +80,8 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          {/* Link columns */}
-          {footerColumns.map((column) => (
-            <nav key={column.id} aria-label={column.title}>
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-gold">
-                {column.title}
-              </h3>
-              <ul className="mt-4 space-y-2.5">
-                {column.links.map((link) => (
-                  <li key={link.id}>
-                    {link.href.startsWith('/') ? (
-                      <Link
-                        href={link.href}
-                        className="text-sm text-white/60 transition-colors duration-200 hover:text-white"
-                      >
-                        {link.label}
-                      </Link>
-                    ) : (
-                      <a
-                        href={link.href}
-                        className="text-sm text-white/60 transition-colors duration-200 hover:text-white"
-                      >
-                        {link.label}
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
         </div>
+
 
         <div className="mt-12 border-t border-white/10 pt-6">
           <p className="text-xs text-white/50">{copyright}</p>

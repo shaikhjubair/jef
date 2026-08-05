@@ -42,7 +42,7 @@ export const org = {
   subtext:
     'Empowering the next generation of economists and leaders at United International University.',
   ctaLabel: 'Join Us',
-  ctaHref: '/members',
+  ctaHref: '/join',
 }
 
 /**

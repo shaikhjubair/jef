@@ -1,0 +1,294 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
+import { CalendarDays, Filter, ChevronRight } from 'lucide-react'
+import { events, type Event } from '@/data/events'
+import { DynamicEventForm } from '@/components/dynamic-event-form'
+import { CountdownTimer } from '@/components/countdown-timer'
+import { cn } from '@/lib/utils'
+
+// ─── Category filter ──────────────────────────────────────────────────────────
+
+type Category = Event['category'] | 'All'
+
+const categories: Category[] = [
+  'All',
+  'Competition',
+  'Summit',
+  'Workshop',
+  'Seminar',
+  'Social',
+  'Other',
+]
+
+// ─── Event card ───────────────────────────────────────────────────────────────
+
+function EventCard({
+  event,
+  onRegister,
+}: {
+  event: Event
+  onRegister: (event: Event) => void
+}) {
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-[#F26522]/10 hover:border-[#F26522]/30">
+      {/* Cover */}
+      <div className="relative aspect-[16/9] overflow-hidden bg-secondary">
+        <Image
+          src={event.image || '/placeholder.svg'}
+          alt={event.title}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+        <span className="absolute left-3 top-3 rounded-full bg-navy-deep/80 px-3 py-1 text-xs font-medium text-gold backdrop-blur-sm">
+          {event.category}
+        </span>
+        {event.requiresRegistration && event.isRegistrationOpen && (
+          <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-[#F26522] px-3 py-1 text-xs font-bold text-white shadow">
+            <span className="size-1.5 animate-ping rounded-full bg-white opacity-75" />
+            Registration Open
+          </span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <CalendarDays className="size-3.5" />
+          {event.dateLabel}
+        </p>
+        <h3 className="mt-2 font-serif text-xl font-bold leading-snug text-navy group-hover:text-[#F26522] transition-colors">
+          {event.title}
+        </h3>
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+          {event.description}
+        </p>
+
+        {/* Registration deadline */}
+        {event.requiresRegistration && event.isRegistrationOpen && event.registrationDeadline && (
+          <div className="mt-4 flex items-center gap-2 rounded-xl bg-[#F26522]/5 px-3 py-2 border border-[#F26522]/10">
+            <p className="text-xs font-semibold text-[#F26522]">
+              Ends in:
+            </p>
+            <CountdownTimer targetDate={event.registrationDeadline} compact />
+          </div>
+        )}
+
+        {/* CTA */}
+        {event.requiresRegistration && (
+          <div className="mt-5">
+            {event.isRegistrationOpen ? (
+              <button
+                onClick={() => onRegister(event)}
+                className="group/btn inline-flex items-center gap-2 rounded-full bg-[#F26522] px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-[#F26522]/20 transition-all duration-200 hover:bg-[#FF7A3D] hover:shadow-[#F26522]/40"
+              >
+                Register Now
+                <ChevronRight className="size-4 transition-transform duration-150 group-hover/btn:translate-x-0.5" />
+              </button>
+            ) : (
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-5 py-2.5 text-sm font-medium text-muted-foreground">
+                Registration Closed
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </article>
+  )
+}
+
+// ─── Events Archive Page ──────────────────────────────────────────────────────
+
+export default function EventsArchive() {
+  const [activeCategory, setActiveCategory] = useState<Category>('All')
+  const [registerEvent, setRegisterEvent] = useState<Event | null>(null)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const registerId = searchParams.get('register')
+    if (registerId) {
+      const eventToRegister = events.find((e) => e.id === registerId)
+      if (eventToRegister && eventToRegister.isRegistrationOpen) {
+        setRegisterEvent(eventToRegister)
+      }
+    }
+  }, [searchParams])
+
+  const filtered =
+    activeCategory === 'All'
+      ? events
+      : events.filter((e) => e.category === activeCategory)
+
+  const sorted = [...filtered].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  )
+
+  const upcoming = sorted.filter((e) => new Date(e.date) >= new Date())
+  const past = sorted.filter((e) => new Date(e.date) < new Date())
+
+  return (
+    <section className="bg-background">
+      {/* ── Hero header ── */}
+      <div className="relative overflow-hidden border-b border-border bg-navy-deep">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(242,101,34,0.12),transparent_55%)]"
+        />
+        <div className="relative mx-auto max-w-6xl px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="max-w-2xl animate-rise">
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium tracking-wide text-gold-soft">
+              <CalendarDays className="size-3.5" />
+              Events Portal
+            </span>
+            <h1 className="mt-5 font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+              Events &amp; <span className="text-gold">Archive</span>
+            </h1>
+            <p className="mt-4 text-base leading-relaxed text-white/70 sm:text-lg">
+              Browse all UIUJEF events — from flagship summits and competitions to
+              hands-on workshops and career seminars.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
+
+        {/* Category filter bar */}
+        <div className="mb-10 flex flex-wrap items-center gap-2">
+          <span className="mr-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <Filter className="size-3.5" />
+            Filter
+          </span>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveCategory(cat)}
+              className={cn(
+                'rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-150',
+                activeCategory === cat
+                  ? 'bg-[#F26522] text-white shadow-sm shadow-[#F26522]/30'
+                  : 'border border-border bg-card text-muted-foreground hover:border-[#F26522]/30 hover:text-navy',
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Upcoming */}
+        {upcoming.length > 0 && (
+          <div className="mb-16">
+            <div className="mb-8 flex items-center gap-4">
+              <h2 className="font-serif text-2xl font-bold text-navy">Upcoming Events</h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+              <span className="rounded-full bg-[#F26522]/10 px-3 py-1 text-xs font-bold text-[#F26522]">
+                {upcoming.length}
+              </span>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {upcoming.map((event) => (
+                <EventCard key={event.id} event={event} onRegister={setRegisterEvent} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Past events */}
+        {past.length > 0 && (
+          <div>
+            <div className="mb-8 flex items-center gap-4">
+              <h2 className="font-serif text-2xl font-bold text-navy">Past Events</h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-muted-foreground">
+                {past.length}
+              </span>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {past.map((event) => (
+                <EventCard key={event.id} event={event} onRegister={setRegisterEvent} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {filtered.length === 0 && (
+          <div className="py-24 text-center">
+            <p className="text-lg font-semibold text-navy">No events in this category yet.</p>
+            <button
+              onClick={() => setActiveCategory('All')}
+              className="mt-4 text-sm font-semibold text-[#F26522] hover:underline"
+            >
+              Show all events
+            </button>
+          </div>
+        )}
+
+        {/* Back to home */}
+        <div className="mt-16 text-center">
+          <Link
+            href="/"
+            className="text-sm font-semibold text-muted-foreground transition-colors hover:text-navy"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+
+      {/* ── Registration modal ── */}
+      {registerEvent && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Register for ${registerEvent.title}`}
+        >
+          <div
+            className="absolute inset-0 bg-navy-deep/70 backdrop-blur-sm"
+            onClick={() => setRegisterEvent(null)}
+          />
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-3xl bg-navy-deep shadow-2xl">
+            <button
+              onClick={() => setRegisterEvent(null)}
+              className="absolute right-4 top-4 z-10 flex size-9 items-center justify-center rounded-full bg-white/10 text-white/60 transition-colors hover:bg-white/20 hover:text-white"
+              aria-label="Close registration form"
+            >
+              ✕
+            </button>
+            <div className="p-6 pb-0 sm:p-8 sm:pb-0">
+              <h2 className="font-serif text-2xl font-bold text-white">{registerEvent.title}</h2>
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-white/50">{registerEvent.dateLabel}</p>
+                {registerEvent.isRegistrationOpen && registerEvent.registrationDeadline && (
+                  <div className="flex items-center gap-2 rounded-full bg-[#F26522]/10 border border-[#F26522]/20 px-3 py-1.5">
+                    <span className="text-xs font-semibold text-[#F26522]">Closes in:</span>
+                    <div className="text-xs text-[#F26522]">
+                      <CountdownTimer targetDate={registerEvent.registrationDeadline} compact />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="p-6 sm:p-8">
+              {registerEvent.registration ? (
+                <DynamicEventForm
+                  eventId={registerEvent.id}
+                  eventName={registerEvent.title}
+                  config={registerEvent.registration}
+                  onSuccess={() => setTimeout(() => setRegisterEvent(null), 3000)}
+                />
+              ) : (
+                <p className="text-white/60">Registration details coming soon.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}
