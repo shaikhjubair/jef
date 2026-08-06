@@ -13,10 +13,12 @@ export default function NewsPage() {
   const [activeArticle, setActiveArticle] = useState<NewsArticle | null>(null)
   const [news, setNews] = useState<NewsArticle[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchNews() {
       setIsLoading(true)
+      setFetchError(null)
       const { data, error } = await supabase
         .from('news')
         .select('*')
@@ -36,6 +38,7 @@ export default function NewsPage() {
         setNews(mappedNews)
       } else if (error) {
         console.error('Error fetching news:', error)
+        setFetchError('Failed to load news articles. Please try again later.')
       }
       setIsLoading(false)
     }
@@ -74,6 +77,14 @@ export default function NewsPage() {
         {isLoading ? (
           <div className="py-24 text-center">
             <p className="text-lg font-semibold text-navy animate-pulse">Loading news...</p>
+          </div>
+        ) : fetchError ? (
+          <div className="py-24 text-center">
+            <div className="inline-flex items-center justify-center size-16 rounded-full bg-red-500/10 mb-4">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <p className="text-lg font-bold text-red-500">{fetchError}</p>
+            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">We encountered an issue while connecting to our database. Our team has been notified.</p>
           </div>
         ) : publishedNews.length === 0 ? (
           <div className="py-24 text-center">

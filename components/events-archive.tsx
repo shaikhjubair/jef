@@ -119,6 +119,7 @@ export default function EventsArchive() {
   const [activeCategory, setActiveCategory] = useState<Category>('All')
   const [events, setEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [registerEvent, setRegisterEvent] = useState<Event | null>(null)
   const [detailsEvent, setDetailsEvent] = useState<Event | null>(null)
   const searchParams = useSearchParams()
@@ -126,6 +127,7 @@ export default function EventsArchive() {
   useEffect(() => {
     async function fetchEvents() {
       setIsLoading(true)
+      setFetchError(null)
       const { data, error } = await supabase.from('events').select('*').order('date', { ascending: false })
       if (!error && data) {
         const mappedEvents: Event[] = data.map(d => ({
@@ -153,6 +155,7 @@ export default function EventsArchive() {
         setEvents(mappedEvents)
       } else if (error) {
         console.error('Error fetching events:', error)
+        setFetchError('Failed to load events. Please try again later.')
       }
       setIsLoading(false)
     }
@@ -237,6 +240,14 @@ export default function EventsArchive() {
         {isLoading ? (
           <div className="py-24 text-center">
             <p className="text-lg font-semibold text-navy animate-pulse">Loading events...</p>
+          </div>
+        ) : fetchError ? (
+          <div className="py-24 text-center">
+            <div className="inline-flex items-center justify-center size-16 rounded-full bg-red-500/10 mb-4">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <p className="text-lg font-bold text-red-500">{fetchError}</p>
+            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">We encountered an issue while connecting to our database. Our team has been notified.</p>
           </div>
         ) : (
           <>
