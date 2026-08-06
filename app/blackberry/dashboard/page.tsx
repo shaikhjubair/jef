@@ -1,7 +1,10 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { LayoutDashboard, Calendar, FileText, Users, Plus } from 'lucide-react'
+import { LayoutDashboard, Calendar, FileText, Users } from 'lucide-react'
+import { EventsManager } from '@/components/admin/events-manager'
+import { NewsManager } from '@/components/admin/news-manager'
+import { ApplicationsManager } from '@/components/admin/applications-manager'
 
 export default function DashboardPage() {
   const searchParams = useSearchParams()
@@ -10,70 +13,11 @@ export default function DashboardPage() {
   const renderTabContent = () => {
     switch (tab) {
       case 'events':
-        return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-navy">Manage Events</h2>
-                <p className="text-muted-foreground mt-1">Create, edit, or delete UIUJEF events.</p>
-              </div>
-              <button className="flex items-center gap-2 bg-[#F26522] text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-[#F26522]/20 hover:bg-[#F26522]/90 transition-all">
-                <Plus className="size-4" />
-                Add Event
-              </button>
-            </div>
-            
-            <div className="bg-white rounded-2xl border border-border p-8 text-center shadow-sm">
-              <div className="mx-auto size-16 bg-secondary rounded-full flex items-center justify-center mb-4">
-                <Calendar className="size-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-bold text-navy mb-2">No Events Found</h3>
-              <p className="text-muted-foreground max-w-sm mx-auto">It looks like there are no events in the system yet. Click "Add Event" to create your first one.</p>
-            </div>
-          </div>
-        )
+        return <EventsManager />
       case 'news':
-        return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-navy">Manage News</h2>
-                <p className="text-muted-foreground mt-1">Publish and manage news articles.</p>
-              </div>
-              <button className="flex items-center gap-2 bg-[#F26522] text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-[#F26522]/20 hover:bg-[#F26522]/90 transition-all">
-                <Plus className="size-4" />
-                Write Article
-              </button>
-            </div>
-            
-            <div className="bg-white rounded-2xl border border-border p-8 text-center shadow-sm">
-              <div className="mx-auto size-16 bg-secondary rounded-full flex items-center justify-center mb-4">
-                <FileText className="size-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-bold text-navy mb-2">No News Found</h3>
-              <p className="text-muted-foreground max-w-sm mx-auto">There are currently no news articles. Start writing to keep your members informed!</p>
-            </div>
-          </div>
-        )
+        return <NewsManager />
       case 'applications':
-        return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-navy">Applications & Registrations</h2>
-                <p className="text-muted-foreground mt-1">Review member joins and event registrations.</p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-2xl border border-border p-8 text-center shadow-sm">
-              <div className="mx-auto size-16 bg-secondary rounded-full flex items-center justify-center mb-4">
-                <Users className="size-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-bold text-navy mb-2">No Pending Applications</h3>
-              <p className="text-muted-foreground max-w-sm mx-auto">All applications have been reviewed or there are no new submissions at this time.</p>
-            </div>
-          </div>
-        )
+        return <ApplicationsManager />
       case 'overview':
       default:
         return (
@@ -90,8 +34,8 @@ export default function DashboardPage() {
                   <Calendar className="size-6 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Total Events</p>
-                  <p className="text-3xl font-black text-navy mt-1">0</p>
+                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Events Tracking</p>
+                  <p className="text-sm text-navy font-semibold mt-1">See Manage Events</p>
                 </div>
               </div>
 
@@ -100,8 +44,8 @@ export default function DashboardPage() {
                   <FileText className="size-6 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Published News</p>
-                  <p className="text-3xl font-black text-navy mt-1">0</p>
+                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">News Pipeline</p>
+                  <p className="text-sm text-navy font-semibold mt-1">See Manage News</p>
                 </div>
               </div>
 
@@ -110,8 +54,8 @@ export default function DashboardPage() {
                   <Users className="size-6 text-orange-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Total Members</p>
-                  <p className="text-3xl font-black text-navy mt-1">0</p>
+                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Members & Registrations</p>
+                  <p className="text-sm text-navy font-semibold mt-1">See Applications</p>
                 </div>
               </div>
             </div>
@@ -120,9 +64,9 @@ export default function DashboardPage() {
               <div className="mx-auto size-16 bg-[#F26522]/10 rounded-full flex items-center justify-center mb-4">
                 <LayoutDashboard className="size-8 text-[#F26522]" />
               </div>
-              <h3 className="text-xl font-bold text-navy mb-2">System Initialized</h3>
+              <h3 className="text-xl font-bold text-navy mb-2">Systems Online</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
-                The CMS placeholder layout is active. Data fetching and form integrations will be added here in future updates.
+                All CRUD operations and real-time Supabase integrations are successfully deployed. Use the sidebar to manage your database securely.
               </p>
             </div>
           </div>
