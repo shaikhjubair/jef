@@ -10,13 +10,13 @@ import { cn } from '@/lib/utils'
 
 const linkClass = (isHome: boolean) =>
   cn(
-    'text-sm font-medium transition-colors duration-200',
+    'text-sm font-semibold transition-colors duration-200',
     isHome ? 'text-white/70 hover:text-white' : 'text-muted-foreground hover:text-navy',
   )
 
 const mobileLinkClass = (isHome: boolean) =>
   cn(
-    'block rounded-lg px-3 py-3 text-sm font-medium transition-colors',
+    'block rounded-lg px-3 py-3 text-sm font-semibold transition-colors',
     isHome
       ? 'text-white/80 hover:bg-white/10 hover:text-white'
       : 'text-foreground hover:bg-secondary hover:text-navy',
@@ -59,10 +59,10 @@ export function SiteNav() {
           <Image
             src="/logo.png"
             alt="UIUJEF Logo"
-            height={56}
-            width={200}
+            height={44}
+            width={160}
             priority
-            className="h-14 w-auto cursor-pointer object-contain"
+            className="h-11 w-auto cursor-pointer object-contain"
           />
         </Link>
 

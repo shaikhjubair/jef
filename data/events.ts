@@ -35,6 +35,16 @@ export interface Event {
   registrationDeadline?: string
   /** Registration form configuration */
   registration?: EventRegistrationConfig
+  /** Optional extended information for the Learn More modal */
+  extendedDetails?: {
+    rules?: string[]
+    notices?: string[]
+    teamRequirements?: string[]
+    registeredTeams?: {
+      name: string
+      status: 'approved' | 'pending' | 'rejected'
+    }[]
+  }
 }
 
 // ─── Dynamic Form Config ──────────────────────────────────────────────────────
@@ -50,6 +60,8 @@ export interface EventRegistrationConfig {
   requireUniversityID: boolean
   /** Custom extra fields appended after core fields */
   extraFields?: ExtraField[]
+  /** If true, injects the payment block (bKash/Nagad & TrxID) before submit */
+  requiresPayment?: boolean
 }
 
 export interface ExtraField {
@@ -84,7 +96,30 @@ export const events: Event[] = [
       requireTeamName: true,
       requireTeamIcon: false,
       requireUniversityID: true,
+      requiresPayment: true,
     },
+    extendedDetails: {
+      rules: [
+        "Participants must be currently enrolled undergraduate students.",
+        "Plagiarism in policy briefs will result in immediate disqualification.",
+        "Teams must bring their own laptops and data tools.",
+      ],
+      notices: [
+        "Registration fee is BDT 500 per team.",
+        "Food and accommodation will be provided during the 24-hour hackathon.",
+        "Please complete payment before submitting this form.",
+      ],
+      teamRequirements: [
+        "Minimum 2 members, maximum 4 members per team.",
+        "Cross-university teams are allowed but must be stated clearly.",
+      ],
+      registeredTeams: [
+        { name: "Team Alpha", status: "approved" },
+        { name: "The Keynesians", status: "approved" },
+        { name: "Beta Innovators", status: "pending" },
+        { name: "Delta Force", status: "rejected" },
+      ]
+    }
   },
   {
     id: 'summit-2026',

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useCallback, useId } from 'react'
-import { Users, User, Hash, Mail, ChevronRight, Loader2, CheckCircle2, X, Building2 } from 'lucide-react'
+import { Users, User, Hash, Mail, ChevronRight, Loader2, CheckCircle2, X, Building2, Wallet } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 import type { EventRegistrationConfig } from '@/data/events'
 import { cn } from '@/lib/utils'
 
@@ -12,9 +13,12 @@ import { cn } from '@/lib/utils'
  * team_members is JSONB in Supabase.
  */
 export interface EventRegistrationPayload {
+  application_id: string
   event_id: string
   team_name: string | null
   members: MemberEntry[]
+  payment_method?: string
+  transaction_id?: string
   status: 'pending' | 'confirmed'
   submitted_at: string
 }
@@ -115,7 +119,7 @@ function MemberBlock({
             id={`${uid}-email`}
             value={member.email}
             onChange={(e) => onChange(index, 'email', e.target.value)}
-            placeholder="email@university.edu"
+            placeholder="e.g., shaikhjubair@gmail.com"
             className={inputCls}
           />
         </div>
@@ -169,8 +173,11 @@ export function DynamicEventForm({
 }: DynamicEventFormProps) {
   const [teamName, setTeamName] = useState('')
   const [members, setMembers] = useState<MemberEntry[]>([{ ...EMPTY_MEMBER }])
+  const [paymentMethod, setPaymentMethod] = useState('')
+  const [transactionId, setTransactionId] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [applicationId, setApplicationId] = useState('')
 
   // Update a specific member's field
   const handleMemberChange = useCallback(
@@ -198,16 +205,39 @@ export function DynamicEventForm({
     e.preventDefault()
     setIsSubmitting(true)
 
+    const newId = 'JEF-EV-' + Math.random().toString(36).substring(2, 8).toUpperCase()
+    setApplicationId(newId)
+
     const payload: EventRegistrationPayload = {
+      application_id: newId,
       event_id: eventId,
       team_name: config.requireTeamName ? teamName : null,
       members: config.isTeamBased ? members : [members[0]],
+      payment_method: config.requiresPayment ? paymentMethod : undefined,
+      transaction_id: config.requiresPayment ? transactionId : undefined,
       status: 'pending',
       submitted_at: new Date().toISOString(),
     }
 
     // TODO: await supabase.from('event_registrations').insert([payload])
     console.log('[UIUJEF] event_registrations insert:', payload)
+    
+    try {
+      await emailjs.send(
+        'service_aiu9rll',
+        'template_te8q0n7',
+        {
+          to_name: members[0].name,
+          to_email: members[0].email,
+          application_id: newId,
+        },
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+      )
+      console.log(`[EmailJS] Sent confirmation email to ${members[0].email}. Application ID: ${newId}`)
+    } catch (err) {
+      console.error('[EmailJS] Error sending email:', err)
+    }
+
     await new Promise((r) => setTimeout(r, 1500))
 
     setIsSubmitting(false)
@@ -221,18 +251,33 @@ export function DynamicEventForm({
         <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-green-500/10 ring-2 ring-green-500/30">
           <CheckCircle2 className="size-10 text-green-500" />
         </div>
-        <h3 className="font-serif text-2xl font-bold text-white">Registration Submitted!</h3>
-        <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-white/60">
+        <h3 className="font-serif text-2xl font-bold text-white mb-2">Registration Submitted!</h3>
+        <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-white/60">
           Your registration for <span className="font-semibold text-[#F26522]">{eventName}</span> has
           been received. You will get a confirmation once reviewed.
         </p>
+
+        <div className="mb-8 rounded-2xl border border-[#F26522]/20 bg-[#F26522]/10 p-5 shadow-inner backdrop-blur-sm mx-auto max-w-xs">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#F26522]/80 mb-2">
+            Application ID
+          </p>
+          <div className="font-mono text-xl font-bold tracking-wider text-white">
+            {applicationId}
+          </div>
+          <p className="mt-2 text-[11px] text-white/50">
+            Save this ID to track your application status.
+          </p>
+        </div>
+
         <button
           onClick={() => {
             setIsSuccess(false)
             setMembers([{ ...EMPTY_MEMBER }])
             setTeamName('')
+            setPaymentMethod('')
+            setTransactionId('')
           }}
-          className="mt-6 rounded-full border border-white/15 px-5 py-2 text-sm font-semibold text-white/60 transition-colors hover:border-[#F26522]/40 hover:text-[#F26522]"
+          className="rounded-full border border-white/15 px-5 py-2 text-sm font-semibold text-white/60 transition-colors hover:border-[#F26522]/40 hover:text-[#F26522]"
         >
           Register another team
         </button>
@@ -300,6 +345,43 @@ export function DynamicEventForm({
           >
             + Add Member {members.length + 1}
           </button>
+        )}
+
+        {/* Payment Block */}
+        {config.requiresPayment && (
+          <div className="mt-8 rounded-2xl border border-[#F26522]/20 bg-[#F26522]/5 p-5">
+            <h4 className="mb-4 flex items-center gap-2 text-sm font-bold text-white">
+              <Wallet className="size-4 text-[#F26522]" /> Payment Information
+            </h4>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <FieldLabel htmlFor="payment_method" icon={Wallet} label="Method" />
+                <select
+                  id="payment_method"
+                  required
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className={cn(inputCls, 'bg-[#1B2A4A]/60')}
+                >
+                  <option value="" disabled>Select Method</option>
+                  <option value="bkash">bKash</option>
+                  <option value="nagad">Nagad</option>
+                </select>
+              </div>
+              <div>
+                <FieldLabel htmlFor="transaction_id" icon={Hash} label="Transaction ID" />
+                <input
+                  type="text"
+                  id="transaction_id"
+                  required
+                  value={transactionId}
+                  onChange={(e) => setTransactionId(e.target.value)}
+                  placeholder="TrxID (e.g. 7F3B9V)"
+                  className={cn(inputCls, 'font-mono uppercase')}
+                />
+              </div>
+            </div>
+          </div>
         )}
       </div>
 

@@ -59,8 +59,10 @@ export const navLinks: NavLink[] = [
   { id: 'about', label: 'About', href: '/about' },
   { id: 'why', label: 'Why Join', href: '/why-join' },
   { id: 'events', label: 'Events', href: '/events' },
+  { id: 'news', label: 'News', href: '/news' },
   { id: 'gallery', label: 'Gallery', href: '/gallery' },
   { id: 'members', label: 'Members', href: '/members' },
+  { id: 'applications', label: 'Track Application', href: '/applications' },
   { id: 'contact', label: 'Contact', href: '/contact' },
 ]
 

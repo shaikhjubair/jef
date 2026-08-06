@@ -2,6 +2,8 @@
 
 import React, { useState, useReducer, useCallback, ChangeEvent } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+import emailjs from '@emailjs/browser'
 import {
   CheckCircle2, ChevronRight, ChevronLeft, Clock, Loader2, Wallet, User, BookOpen,
   Mail, Phone, Droplet, Building2, Hash, Calendar, Camera, MessageSquare, Search,
@@ -195,16 +197,39 @@ export default function JoinPage() {
       setForm(prev => ({ ...prev, photo_url: objectUrl }))
     }
   }, [])
+  const [applicationId, setApplicationId] = useState<string>('')
 
   const handleSubmit = useCallback(async () => {
     if (validateStep3()) {
       setIsLoading(true)
-      // Simulate API call
+      
+      // Generate unique application ID
+      const newId = 'JEF-MB-' + Math.random().toString(36).substring(2, 8).toUpperCase()
+      setApplicationId(newId)
+
+      // Mock API / DB submission delay
       await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      try {
+        await emailjs.send(
+          'service_aiu9rll',
+          'template_te8q0n7',
+          {
+            to_name: form.full_name,
+            to_email: form.email,
+            application_id: newId,
+          },
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+        )
+        console.log(`[EmailJS] Sent confirmation email to ${form.email}. Application ID: ${newId}`)
+      } catch (err) {
+        console.error('[EmailJS] Error sending email:', err)
+      }
+
       setIsLoading(false)
       setIsSubmitted(true)
     }
-  }, [validateStep3])
+  }, [validateStep3, form.email])
 
   if (!isRecruitmentOpen) {
     return (
@@ -233,52 +258,32 @@ export default function JoinPage() {
       <div className="min-h-screen bg-navy-deep flex items-center justify-center p-4">
         <div className="rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30 backdrop-blur-xl p-8 md:p-12 max-w-2xl w-full text-center">
           <div className="relative w-24 h-24 mx-auto mb-6">
-            <div className="absolute inset-0 bg-[#F26522]/20 rounded-full animate-ping" />
+            <div className="absolute inset-0 border-2 border-[#F26522] rounded-full animate-ping opacity-50" />
             <div className="relative bg-[#F26522] rounded-full w-full h-full flex items-center justify-center shadow-lg shadow-[#F26522]/30">
-              <Clock className="w-10 h-10 text-white" />
+              <CheckCircle2 className="w-10 h-10 text-white" />
             </div>
           </div>
-          
-          <h2 className="text-3xl font-bold text-white mb-2">Application Submitted!</h2>
-          <p className="text-white/60 mb-8">
-            Your transaction ID <span className="font-mono text-[#F26522] bg-[#F26522]/10 px-2 py-1 rounded">{form.transaction_id}</span> has been recorded.
+          <h2 className="font-serif text-3xl font-bold text-white mb-2">Application Submitted!</h2>
+          <p className="text-white/70 text-lg mb-8">
+            Thank you for applying to UIUJEF. We're reviewing your application.
           </p>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mt-12 mb-8">
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xs text-white/60 max-w-[100px]">Submitted</span>
+          {/* Application ID Box */}
+          <div className="mb-8 rounded-2xl border border-[#F26522]/20 bg-[#F26522]/10 p-6 shadow-inner backdrop-blur-sm mx-auto max-w-sm">
+            <p className="text-sm font-semibold uppercase tracking-widest text-[#F26522]/80 mb-2">
+              Your Application ID
+            </p>
+            <div className="font-mono text-3xl font-bold tracking-wider text-white">
+              {applicationId}
             </div>
-            <div className="hidden md:block w-12 h-[2px] bg-white/20" />
-            
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#F26522] flex items-center justify-center relative shadow-lg shadow-[#F26522]/20">
-                <div className="absolute inset-0 border-2 border-[#F26522] rounded-full animate-ping opacity-50" />
-                <div className="w-3 h-3 bg-white rounded-full" />
-              </div>
-              <span className="text-xs text-white font-medium max-w-[100px]">Payment Verification</span>
-            </div>
-            <div className="hidden md:block w-12 h-[2px] bg-white/10" />
-
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                <div className="w-2 h-2 bg-white/30 rounded-full" />
-              </div>
-              <span className="text-xs text-white/40 max-w-[100px]">Admin Approval</span>
-            </div>
-            <div className="hidden md:block w-12 h-[2px] bg-white/10" />
-
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                <div className="w-2 h-2 bg-white/30 rounded-full" />
-              </div>
-              <span className="text-xs text-white/40 max-w-[100px]">Added as Member</span>
-            </div>
+            <p className="mt-3 text-sm text-white/50">
+              Save this ID to track your application status. A confirmation email has been sent to {form.email}.
+            </p>
           </div>
-          
-          <p className="text-sm text-white/40">We will notify you via email once your application is processed.</p>
+
+          <Link href="/applications" className="inline-block bg-white/10 hover:bg-white/20 text-white font-medium px-6 py-3 rounded-xl transition-colors">
+            Track Application Status
+          </Link>
         </div>
       </div>
     )
@@ -359,8 +364,8 @@ export default function JoinPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <Field id="email" label="UIU Email" icon={Mail} error={errors.email}>
-                  <input id="email" name="email" type="email" value={form.email} onChange={handleChange} className={inputClass} placeholder="jdoe231@bscse.uiu.ac.bd" />
+                <Field id="email" label="UIU Email Address" icon={Mail} error={errors.email}>
+                  <input id="email" name="email" type="email" value={form.email} onChange={handleChange} className={inputClass} placeholder="e.g., shaikhjubair@gmail.com" />
                 </Field>
                 <Field id="phone" label="Phone Number" icon={Phone} error={errors.phone}>
                   <input id="phone" name="phone" type="tel" value={form.phone} onChange={handleChange} className={inputClass} placeholder="01XXXXXXXXX" />
@@ -381,10 +386,10 @@ export default function JoinPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Field id="father_name" label="Father's Name" icon={User} error={errors.father_name}>
-                  <input id="father_name" name="father_name" type="text" value={form.father_name} onChange={handleChange} className={inputClass} placeholder="Father's Name" />
+                  <input id="father_name" name="father_name" type="text" value={form.father_name} onChange={handleChange} className={inputClass} placeholder="e.g., Shaikh Jubair" />
                 </Field>
                 <Field id="mother_name" label="Mother's Name" icon={User} error={errors.mother_name}>
-                  <input id="mother_name" name="mother_name" type="text" value={form.mother_name} onChange={handleChange} className={inputClass} placeholder="Mother's Name" />
+                  <input id="mother_name" name="mother_name" type="text" value={form.mother_name} onChange={handleChange} className={inputClass} placeholder="e.g., Shaikh Jubair" />
                 </Field>
               </div>
 

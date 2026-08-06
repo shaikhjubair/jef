@@ -29,9 +29,11 @@ const categories: Category[] = [
 function EventCard({
   event,
   onRegister,
+  onLearnMore,
 }: {
   event: Event
   onRegister: (event: Event) => void
+  onLearnMore: (event: Event) => void
 }) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-[#F26522]/10 hover:border-[#F26522]/30">
@@ -79,9 +81,9 @@ function EventCard({
         )}
 
         {/* CTA */}
-        {event.requiresRegistration && (
-          <div className="mt-5">
-            {event.isRegistrationOpen ? (
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          {event.requiresRegistration && (
+            event.isRegistrationOpen ? (
               <button
                 onClick={() => onRegister(event)}
                 className="group/btn inline-flex items-center gap-2 rounded-full bg-[#F26522] px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-[#F26522]/20 transition-all duration-200 hover:bg-[#FF7A3D] hover:shadow-[#F26522]/40"
@@ -93,9 +95,18 @@ function EventCard({
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-5 py-2.5 text-sm font-medium text-muted-foreground">
                 Registration Closed
               </span>
-            )}
-          </div>
-        )}
+            )
+          )}
+          
+          {event.extendedDetails && (
+            <button
+              onClick={() => onLearnMore(event)}
+              className="inline-flex items-center gap-2 rounded-full border border-navy/20 bg-transparent px-5 py-2.5 text-sm font-bold text-navy transition-all hover:bg-navy/5"
+            >
+              Learn More
+            </button>
+          )}
+        </div>
       </div>
     </article>
   )
@@ -106,6 +117,7 @@ function EventCard({
 export default function EventsArchive() {
   const [activeCategory, setActiveCategory] = useState<Category>('All')
   const [registerEvent, setRegisterEvent] = useState<Event | null>(null)
+  const [detailsEvent, setDetailsEvent] = useState<Event | null>(null)
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -193,7 +205,7 @@ export default function EventsArchive() {
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {upcoming.map((event) => (
-                <EventCard key={event.id} event={event} onRegister={setRegisterEvent} />
+                <EventCard key={event.id} event={event} onRegister={setRegisterEvent} onLearnMore={setDetailsEvent} />
               ))}
             </div>
           </div>
@@ -211,7 +223,7 @@ export default function EventsArchive() {
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {past.map((event) => (
-                <EventCard key={event.id} event={event} onRegister={setRegisterEvent} />
+                <EventCard key={event.id} event={event} onRegister={setRegisterEvent} onLearnMore={setDetailsEvent} />
               ))}
             </div>
           </div>
@@ -284,6 +296,148 @@ export default function EventsArchive() {
                 />
               ) : (
                 <p className="text-white/60">Registration details coming soon.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Event Details Modal ── */}
+      {detailsEvent && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Details for ${detailsEvent.title}`}
+        >
+          <div
+            className="absolute inset-0 bg-navy-deep/80 backdrop-blur-sm"
+            onClick={() => setDetailsEvent(null)}
+          />
+          <div className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl flex flex-col overflow-hidden">
+            {/* Sticky Close Button in Fixed Container */}
+            <button
+              onClick={() => setDetailsEvent(null)}
+              className="absolute right-4 top-4 z-20 flex size-9 items-center justify-center rounded-full bg-black/5 text-navy/60 transition-colors hover:bg-black/10 hover:text-navy"
+              aria-label="Close details"
+            >
+              ✕
+            </button>
+            
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto overscroll-contain flex flex-col p-6 sm:p-8">
+              <h2 className="font-serif text-3xl font-bold text-navy pr-10">{detailsEvent.title}</h2>
+              <div className="mt-2 mb-8 flex flex-wrap items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 px-3 py-1 text-xs font-semibold text-navy/70">
+                  <CalendarDays className="size-3.5" />
+                  {detailsEvent.dateLabel}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/10 border border-gold/30 px-3 py-1 text-xs font-semibold text-gold-soft">
+                  {detailsEvent.category}
+                </span>
+              </div>
+
+              <div className="space-y-8">
+                {/* Description */}
+                <div>
+                  <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-navy/40">About the Event</h3>
+                  <p className="text-base leading-relaxed text-navy/80">{detailsEvent.description}</p>
+                </div>
+
+                {/* Extended Details */}
+                {detailsEvent.extendedDetails && (
+                  <>
+                    {detailsEvent.extendedDetails.rules && detailsEvent.extendedDetails.rules.length > 0 && (
+                      <div className="rounded-2xl border border-navy/10 bg-navy/4 p-5">
+                        <h3 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-navy">
+                          <span className="flex size-6 items-center justify-center rounded-full bg-navy/10 text-navy">📋</span> 
+                          Rules & Guidelines
+                        </h3>
+                        <ul className="space-y-2 text-sm text-navy/70">
+                          {detailsEvent.extendedDetails.rules.map((rule, idx) => (
+                            <li key={idx} className="flex gap-2">
+                              <span className="text-[#F26522]">•</span>
+                              {rule}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {detailsEvent.extendedDetails.teamRequirements && detailsEvent.extendedDetails.teamRequirements.length > 0 && (
+                      <div className="rounded-2xl border border-[#F26522]/20 bg-[#F26522]/5 p-5">
+                        <h3 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#F26522]">
+                          <span className="flex size-6 items-center justify-center rounded-full bg-[#F26522]/20 text-[#F26522]">👥</span> 
+                          Team Requirements
+                        </h3>
+                        <ul className="space-y-2 text-sm text-[#F26522]/90">
+                          {detailsEvent.extendedDetails.teamRequirements.map((req, idx) => (
+                            <li key={idx} className="flex gap-2">
+                              <span className="font-bold">•</span>
+                              {req}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {detailsEvent.extendedDetails.notices && detailsEvent.extendedDetails.notices.length > 0 && (
+                      <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-5">
+                        <h3 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-red-600">
+                          <span className="flex size-6 items-center justify-center rounded-full bg-red-500/10 text-red-600">⚠️</span> 
+                          Important Notices
+                        </h3>
+                        <ul className="space-y-2 text-sm text-red-600/90">
+                          {detailsEvent.extendedDetails.notices.map((notice, idx) => (
+                            <li key={idx} className="flex gap-2">
+                              <span className="font-bold">•</span>
+                              {notice}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {detailsEvent.extendedDetails?.registeredTeams && detailsEvent.extendedDetails.registeredTeams.length > 0 && (
+                  <div className="rounded-2xl border border-navy/10 bg-white p-5 shadow-sm">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-navy">
+                      <span className="flex size-6 items-center justify-center rounded-full bg-navy/10 text-navy">🏆</span> 
+                      Registered Teams
+                    </h3>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {detailsEvent.extendedDetails.registeredTeams.map((team, idx) => (
+                        <div key={idx} className="flex items-center justify-between rounded-xl border border-border bg-secondary/50 px-4 py-3">
+                          <span className="font-semibold text-sm text-navy">{team.name}</span>
+                          <span className={cn(
+                            "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider",
+                            team.status === 'approved' ? "bg-green-100 text-green-700" :
+                            team.status === 'pending' ? "bg-orange-100 text-orange-700" :
+                            "bg-red-100 text-red-700"
+                          )}>
+                            {team.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {detailsEvent.requiresRegistration && detailsEvent.isRegistrationOpen && (
+                <div className="mt-10 pt-6 border-t border-border flex justify-end">
+                  <button
+                    onClick={() => {
+                      setDetailsEvent(null)
+                      setRegisterEvent(detailsEvent)
+                    }}
+                    className="group inline-flex items-center gap-2 rounded-full bg-[#F26522] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#F26522]/30 transition-all hover:bg-[#FF7A3D]"
+                  >
+                    Register Now
+                    <ChevronRight className="size-4 transition-transform group-hover:translate-x-1" />
+                  </button>
+                </div>
               )}
             </div>
           </div>
