@@ -6,10 +6,14 @@ import { SiteFooter } from '@/components/site-footer'
 import { Search, Loader2, CheckCircle2, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+import { supabase } from '@/lib/supabase'
+
+type AppResult = { name: string, type: string, status: string } | 'not-found'
+
 export default function ApplicationsTrackingPage() {
   const [appId, setAppId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<'mb-pending' | 'mb-approved' | 'ev-pending' | 'ev-approved' | 'not-found' | null>(null)
+  const [result, setResult] = useState<AppResult | null>(null)
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,15 +22,20 @@ export default function ApplicationsTrackingPage() {
     setIsLoading(true)
     setResult(null)
 
-    // Mock network request
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
     const cleanId = appId.trim().toUpperCase()
     
-    if (cleanId.startsWith('JEF-MB-') && cleanId.length === 13) {
-      setResult(Math.random() > 0.7 ? 'mb-approved' : 'mb-pending')
-    } else if (cleanId.startsWith('JEF-EV-') && cleanId.length === 13) {
-      setResult(Math.random() > 0.7 ? 'ev-approved' : 'ev-pending')
+    const { data, error } = await supabase
+      .from('applications')
+      .select('*')
+      .eq('application_id', cleanId)
+      .single()
+
+    if (data && !error) {
+      setResult({
+        name: data.name,
+        type: data.type,
+        status: data.status
+      })
     } else {
       setResult('not-found')
     }
@@ -81,50 +90,31 @@ export default function ApplicationsTrackingPage() {
                   </div>
                 )}
 
-                {result === 'mb-pending' && (
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-6 rounded-2xl bg-[#F26522]/10 border border-[#F26522]/30 text-left">
-                    <div className="size-14 rounded-full bg-[#F26522]/20 flex items-center justify-center shrink-0">
-                      <Clock className="size-6 text-[#F26522]" />
+                {result !== 'not-found' && result !== null && (
+                  <div className={cn(
+                    "flex flex-col sm:flex-row items-center gap-5 p-6 rounded-2xl text-left border",
+                    result.status === 'Approved' ? "bg-green-500/10 border-green-500/30" :
+                    result.status === 'Rejected' ? "bg-red-500/10 border-red-500/30" :
+                    "bg-[#F26522]/10 border-[#F26522]/30"
+                  )}>
+                    <div className={cn(
+                      "size-14 rounded-full flex items-center justify-center shrink-0",
+                      result.status === 'Approved' ? "bg-green-500/20" :
+                      result.status === 'Rejected' ? "bg-red-500/20" :
+                      "bg-[#F26522]/20"
+                    )}>
+                      {result.status === 'Approved' ? <CheckCircle2 className="size-6 text-green-500" /> : <Clock className={cn("size-6", result.status === 'Rejected' ? "text-red-500" : "text-[#F26522]")} />}
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white">Member Application Pending</h3>
-                      <p className="text-sm text-white/70 mt-1">Your member application is currently under review by the Executive Panel. You will receive an email once a decision is made.</p>
-                    </div>
-                  </div>
-                )}
-
-                {result === 'mb-approved' && (
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-6 rounded-2xl bg-green-500/10 border border-green-500/30 text-left">
-                    <div className="size-14 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="size-6 text-green-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">Member Application Approved!</h3>
-                      <p className="text-sm text-white/70 mt-1">Congratulations! You are officially a member of UIUJEF. Check your email for further instructions.</p>
-                    </div>
-                  </div>
-                )}
-
-                {result === 'ev-pending' && (
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-6 rounded-2xl bg-[#F26522]/10 border border-[#F26522]/30 text-left">
-                    <div className="size-14 rounded-full bg-[#F26522]/20 flex items-center justify-center shrink-0">
-                      <Clock className="size-6 text-[#F26522]" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">Event Registration Pending</h3>
-                      <p className="text-sm text-white/70 mt-1">Your event registration and payment are being verified. An email confirmation will be sent shortly.</p>
-                    </div>
-                  </div>
-                )}
-
-                {result === 'ev-approved' && (
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-6 rounded-2xl bg-green-500/10 border border-green-500/30 text-left">
-                    <div className="size-14 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="size-6 text-green-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">Event Registration Confirmed!</h3>
-                      <p className="text-sm text-white/70 mt-1">Your spot is secured. We look forward to seeing you at the event. Check your email for details.</p>
+                      <h3 className="text-lg font-bold text-white">
+                        {result.type} Application {result.status}
+                      </h3>
+                      <p className="text-sm text-white/70 mt-1">
+                        <span className="font-semibold text-white">Applicant:</span> {result.name}<br/>
+                        {result.status === 'Approved' ? "Congratulations! Check your email for further instructions." :
+                         result.status === 'Rejected' ? "Unfortunately, your application was not approved at this time." :
+                         "Your application is currently under review. You will receive an email once a decision is made."}
+                      </p>
                     </div>
                   </div>
                 )}

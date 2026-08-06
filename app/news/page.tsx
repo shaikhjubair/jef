@@ -1,17 +1,48 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { SiteNav } from '@/components/site-nav'
 import { SiteFooter } from '@/components/site-footer'
 import { CalendarDays, ChevronRight } from 'lucide-react'
-import { news, type NewsArticle } from '@/data/news'
+import { type NewsArticle } from '@/data/news'
 import { cn } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 
 export default function NewsPage() {
   const [activeArticle, setActiveArticle] = useState<NewsArticle | null>(null)
+  const [news, setNews] = useState<NewsArticle[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const publishedNews = news.filter(n => n.published).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  useEffect(() => {
+    async function fetchNews() {
+      setIsLoading(true)
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .eq('published', true)
+        .order('published_at', { ascending: false })
+
+      if (!error && data) {
+        const mappedNews: NewsArticle[] = data.map(d => ({
+          id: d.id,
+          title: d.title,
+          date: d.published_at,
+          dateLabel: new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d.published_at)),
+          content: d.content,
+          coverImage: d.cover_image ?? d.coverImage,
+          published: d.published,
+        }))
+        setNews(mappedNews)
+      } else if (error) {
+        console.error('Error fetching news:', error)
+      }
+      setIsLoading(false)
+    }
+    fetchNews()
+  }, [])
+
+  const publishedNews = news
 
   return (
     <div className="relative min-h-screen bg-background flex flex-col">
@@ -40,7 +71,11 @@ export default function NewsPage() {
       </div>
 
       <main className="flex-1 mx-auto max-w-6xl px-5 py-14 sm:px-6 lg:px-8 lg:py-20 w-full">
-        {publishedNews.length === 0 ? (
+        {isLoading ? (
+          <div className="py-24 text-center">
+            <p className="text-lg font-semibold text-navy animate-pulse">Loading news...</p>
+          </div>
+        ) : publishedNews.length === 0 ? (
           <div className="py-24 text-center">
             <p className="text-lg font-semibold text-navy">No news published yet.</p>
           </div>

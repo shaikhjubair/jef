@@ -5,10 +5,11 @@ import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { CalendarDays, Filter, ChevronRight } from 'lucide-react'
-import { events, type Event } from '@/data/events'
+import { type Event } from '@/data/events'
 import { DynamicEventForm } from '@/components/dynamic-event-form'
 import { CountdownTimer } from '@/components/countdown-timer'
 import { cn } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 
 // ─── Category filter ──────────────────────────────────────────────────────────
 
@@ -116,19 +117,57 @@ function EventCard({
 
 export default function EventsArchive() {
   const [activeCategory, setActiveCategory] = useState<Category>('All')
+  const [events, setEvents] = useState<Event[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [registerEvent, setRegisterEvent] = useState<Event | null>(null)
   const [detailsEvent, setDetailsEvent] = useState<Event | null>(null)
   const searchParams = useSearchParams()
 
   useEffect(() => {
+    async function fetchEvents() {
+      setIsLoading(true)
+      const { data, error } = await supabase.from('events').select('*').order('date', { ascending: false })
+      if (!error && data) {
+        const mappedEvents: Event[] = data.map(d => ({
+          id: d.id,
+          title: d.title,
+          date: d.date,
+          dateLabel: d.dateLabel || new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d.date)),
+          description: d.description,
+          image: d.image,
+          category: d.category,
+          excerpt: d.excerpt,
+          isRegistrationOpen: d.is_registration_open ?? d.isRegistrationOpen,
+          requiresRegistration: d.requires_registration ?? d.requiresRegistration,
+          registrationDeadline: d.registration_deadline ?? d.registrationDeadline,
+          registration: d.requires_registration ?? d.requiresRegistration ? {
+            isTeamBased: d.is_team_based ?? d.isTeamBased,
+            maxTeamMembers: d.max_team_members ?? d.maxTeamMembers,
+            requireTeamName: d.require_team_name ?? d.requireTeamName,
+            requireTeamIcon: d.require_team_icon ?? d.requireTeamIcon,
+            requireUniversityID: d.require_university_id ?? d.requireUniversityID,
+            requiresPayment: d.requires_payment ?? d.requiresPayment,
+          } : undefined,
+          extendedDetails: d.extendedDetails || d.extended_details
+        }))
+        setEvents(mappedEvents)
+      } else if (error) {
+        console.error('Error fetching events:', error)
+      }
+      setIsLoading(false)
+    }
+    fetchEvents()
+  }, [])
+
+  useEffect(() => {
     const registerId = searchParams.get('register')
-    if (registerId) {
+    if (registerId && events.length > 0) {
       const eventToRegister = events.find((e) => e.id === registerId)
       if (eventToRegister && eventToRegister.isRegistrationOpen) {
         setRegisterEvent(eventToRegister)
       }
     }
-  }, [searchParams])
+  }, [searchParams, events])
 
   const filtered =
     activeCategory === 'All'
@@ -180,12 +219,14 @@ export default function EventsArchive() {
             <button
               key={cat}
               type="button"
+              disabled={isLoading}
               onClick={() => setActiveCategory(cat)}
               className={cn(
                 'rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-150',
                 activeCategory === cat
                   ? 'bg-[#F26522] text-white shadow-sm shadow-[#F26522]/30'
                   : 'border border-border bg-card text-muted-foreground hover:border-[#F26522]/30 hover:text-navy',
+                isLoading && 'opacity-50 cursor-not-allowed'
               )}
             >
               {cat}
@@ -193,6 +234,12 @@ export default function EventsArchive() {
           ))}
         </div>
 
+        {isLoading ? (
+          <div className="py-24 text-center">
+            <p className="text-lg font-semibold text-navy animate-pulse">Loading events...</p>
+          </div>
+        ) : (
+          <>
         {/* Upcoming */}
         {upcoming.length > 0 && (
           <div className="mb-16">
@@ -239,6 +286,8 @@ export default function EventsArchive() {
               Show all events
             </button>
           </div>
+        )}
+        </>
         )}
 
         {/* Back to home */}
