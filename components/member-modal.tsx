@@ -57,18 +57,19 @@ export function MemberModal({ member, onClose }: MemberModalProps) {
         onClick={onClose}
       />
 
-      {/* Modal panel — scrollable on mobile */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-3xl bg-white shadow-2xl">
-        {/* Close button */}
+      {/* Modal panel */}
+      <div className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl flex flex-col overflow-hidden">
+        {/* Close button (Fixed inside outer container) */}
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute right-4 top-4 z-10 rounded-full bg-black/5 p-2 text-navy/60 transition-colors hover:bg-black/10 hover:text-navy"
+          className="absolute right-4 top-4 z-[110] rounded-full bg-black/10 p-2 text-navy/80 backdrop-blur-sm transition-colors hover:bg-black/20 hover:text-navy"
         >
           <X className="size-5" />
         </button>
 
-        <div className="flex flex-col md:flex-row">
+        {/* Scrollable content wrapper */}
+        <div className="flex flex-col md:flex-row overflow-y-auto overscroll-contain w-full h-full">
           {/* Left — profile image */}
           <div className="relative h-64 w-full shrink-0 md:h-auto md:w-[38%]">
             <Image
