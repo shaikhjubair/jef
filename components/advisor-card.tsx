@@ -18,7 +18,7 @@ export function AdvisorCard({ member, onClick, className }: AdvisorCardProps) {
       onClick={onClick}
       className={cn(
         'group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl',
-        'border border-border bg-card transition-all duration-300',
+        'border border-border bg-card transition-all duration-200',
         'hover:border-[#F26522]/40 hover:shadow-xl hover:shadow-[#F26522]/8',
         className,
       )}
@@ -29,7 +29,6 @@ export function AdvisorCard({ member, onClick, className }: AdvisorCardProps) {
       <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-start sm:gap-6">
         {/* Circular portrait */}
         <div className="relative mx-auto shrink-0 sm:mx-0">
-          {/* Spinning dashed ring on hover */}
           <div className="absolute inset-0 -m-1.5 rounded-full border-2 border-dashed border-[#F26522]/20 transition-transform duration-700 group-hover:rotate-180" />
           <div className="relative size-24 overflow-hidden rounded-full ring-3 ring-[#1B2A4A]/20 shadow-lg transition-all duration-300 group-hover:ring-[#F26522]/50 group-hover:scale-105 sm:size-28">
             <Image

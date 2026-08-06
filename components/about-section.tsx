@@ -40,7 +40,7 @@ export function AboutSection() {
           className="pointer-events-none absolute -right-24 top-1/3 size-96 rounded-full bg-navy/40 blur-3xl"
         />
         <div className="relative mx-auto max-w-6xl px-5 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
-          <div className="mx-auto max-w-4xl text-center animate-rise">
+          <div className="mx-auto max-w-4xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-gold-soft backdrop-blur-md">
               {org.name}
             </span>
@@ -62,7 +62,7 @@ export function AboutSection() {
       {/* Mission & Vision */}
       <section className="relative border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="animate-reveal mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-2xl text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-navy-soft">
               Our Purpose
             </span>
@@ -72,7 +72,7 @@ export function AboutSection() {
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-2 lg:gap-8">
-            <article className="animate-reveal animate-reveal-delay-1 group rounded-3xl border border-border/70 bg-card/60 p-8 shadow-lg shadow-navy/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-gold/30 hover:shadow-xl hover:shadow-navy/10 sm:p-10">
+            <article className="group rounded-3xl border border-border/70 bg-card/60 p-8 shadow-lg shadow-navy/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-gold/30 hover:shadow-xl hover:shadow-navy/10 sm:p-10">
               <div className="inline-flex size-12 items-center justify-center rounded-2xl border border-gold/25 bg-gold/10 text-gold transition-colors duration-300 group-hover:bg-gold/15">
                 <Target className="size-5" aria-hidden="true" />
               </div>
@@ -84,7 +84,7 @@ export function AboutSection() {
               </p>
             </article>
 
-            <article className="animate-reveal animate-reveal-delay-2 group rounded-3xl border border-border/70 bg-card/60 p-8 shadow-lg shadow-navy/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-gold/30 hover:shadow-xl hover:shadow-navy/10 sm:p-10">
+            <article className="group rounded-3xl border border-border/70 bg-card/60 p-8 shadow-lg shadow-navy/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-gold/30 hover:shadow-xl hover:shadow-navy/10 sm:p-10">
               <div className="inline-flex size-12 items-center justify-center rounded-2xl border border-gold/25 bg-gold/10 text-gold transition-colors duration-300 group-hover:bg-gold/15">
                 <Telescope className="size-5" aria-hidden="true" />
               </div>
@@ -102,7 +102,7 @@ export function AboutSection() {
       {/* Core Pillars */}
       <section className="border-b border-border bg-secondary/40">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="animate-reveal mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-2xl text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-navy-soft">
               What We Do
             </span>
@@ -122,9 +122,9 @@ export function AboutSection() {
                 <article
                   key={pillar.id}
                   className={cn(
-                    'animate-reveal group rounded-2xl border border-border/70 bg-card/70 p-7 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-gold/30 hover:shadow-lg hover:shadow-navy/10',
-                    index === 1 && 'animate-reveal-delay-1',
-                    index === 2 && 'animate-reveal-delay-2',
+                    ' group rounded-2xl border border-border/70 bg-card/70 p-7 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-gold/30 hover:shadow-lg hover:shadow-navy/10',
+                    index === 1 && ' ',
+                    index === 2 && ' ',
                   )}
                 >
                   <div className="inline-flex size-11 items-center justify-center rounded-xl bg-navy text-gold transition-transform duration-300 group-hover:scale-105">
@@ -144,7 +144,7 @@ export function AboutSection() {
       {/* Timeline — refined continuity */}
       <section className="bg-background">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="animate-reveal flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-navy-soft">
                 Our Journey
@@ -159,7 +159,7 @@ export function AboutSection() {
             </p>
           </div>
 
-          <ol className="animate-reveal animate-reveal-delay-1 mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+          <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {timeline.map((item) => (
               <li
                 key={item.id}

@@ -16,17 +16,17 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
     <article
       onClick={onClick}
       className={cn(
-        'group relative flex cursor-pointer flex-col items-center pt-8 pb-0 px-4',
-        'transition-all duration-300 ease-out',
+        'group relative flex cursor-pointer flex-col items-center pt-4 pb-2 px-2',
+        'transition-all duration-300 ease-out hover:-translate-y-1',
         className,
       )}
     >
       {/* Circular profile image with animated border */}
       <div className="relative mb-4">
         {/* Spinning dashed ring on hover */}
-        <div className="absolute inset-0 -m-1.5 rounded-full border-2 border-dashed border-[#F26522]/30 transition-transform duration-700 group-hover:rotate-180" />
+        <div className="absolute inset-0 -m-1.5 rounded-full border-2 border-dashed border-[#F26522]/40 transition-transform duration-700 group-hover:rotate-180" />
         {/* Solid colored ring */}
-        <div className="relative size-32 overflow-hidden rounded-full ring-4 ring-[#1B2A4A] shadow-xl transition-transform duration-300 group-hover:scale-105 group-hover:ring-[#F26522] sm:size-40">
+        <div className="relative size-32 overflow-hidden rounded-full ring-4 ring-[#F26522] shadow-xl transition-transform duration-300 group-hover:scale-105 sm:size-40">
           <Image
             src={member.image}
             alt={member.name}
@@ -50,15 +50,15 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
         </p>
       </div>
 
-      {/* Social media bar — rectangular, colored, at bottom of card */}
-      <div className="mt-5 flex w-full max-w-[200px] items-center justify-center gap-5 rounded-xl bg-[#1B2A4A] py-2.5 text-white transition-colors duration-300 group-hover:bg-[#F26522]">
+      {/* Social media bar — clean, minimal */}
+      <div className="mt-4 flex items-center justify-center gap-4 text-navy/50 transition-colors duration-300 group-hover:text-[#F26522]">
         {member.socials?.facebook && (
           <a
             href={member.socials.facebook}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="transition-transform hover:scale-125"
+            className="transition-transform hover:scale-125 hover:text-[#F26522]"
             aria-label={`${member.name} on Facebook`}
           >
             <FaFacebook className="size-4" />
@@ -70,7 +70,7 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="transition-transform hover:scale-125"
+            className="transition-transform hover:scale-125 hover:text-[#F26522]"
             aria-label={`${member.name} on LinkedIn`}
           >
             <FaLinkedin className="size-4" />
@@ -82,7 +82,7 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="transition-transform hover:scale-125"
+            className="transition-transform hover:scale-125 hover:text-[#F26522]"
             aria-label={`${member.name} on Instagram`}
           >
             <FaInstagram className="size-4" />

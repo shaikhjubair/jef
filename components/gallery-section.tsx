@@ -32,7 +32,7 @@ export function GallerySection() {
     <section className="bg-background">
       <div className="border-b border-border bg-navy-deep">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="max-w-2xl animate-rise">
+          <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium tracking-wide text-gold-soft">
               <Camera className="size-3.5" aria-hidden="true" />
               Moments

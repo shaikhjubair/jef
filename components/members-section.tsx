@@ -38,7 +38,7 @@ function SectionHeader({
   subtitle: string
 }) {
   return (
-    <div className="mb-10 flex flex-col items-center gap-3 text-center sm:flex-row sm:text-left">
+    <div className="mb-6 flex flex-col items-center gap-3 text-center sm:flex-row sm:text-left">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#F26522]/10 text-[#F26522]">
         <Icon className="size-6" />
       </div>
@@ -78,16 +78,16 @@ export function MembersSection() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(242,101,34,0.12),transparent_55%)]"
         />
-        <div className="relative mx-auto max-w-6xl px-5 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="max-w-2xl animate-rise">
+        <div className="relative mx-auto max-w-6xl px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
+          <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium tracking-wide text-gold-soft">
               <Users className="size-3.5" aria-hidden="true" />
               Our Community
             </span>
-            <h1 className="mt-5 font-serif text-3xl font-bold tracking-tight text-white text-balance sm:text-4xl lg:text-5xl">
+            <h1 className="mt-4 font-serif text-3xl font-bold tracking-tight text-white text-balance sm:text-4xl lg:text-5xl">
               Meet the <span className="text-gold">Members</span>
             </h1>
-            <p className="mt-4 text-base leading-relaxed text-white/70 text-pretty sm:text-lg">
+            <p className="mt-3 text-base leading-relaxed text-white/70 text-pretty sm:text-lg">
               From Faculty Advisors and Club Moderators to the Executive Panel and General
               Members — explore every tier of the {org.shortName} community at{' '}
               {org.university}.
@@ -97,13 +97,13 @@ export function MembersSection() {
       </div>
 
       {/* ── Body ── */}
-      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-6 lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-6xl px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
 
         {/* ── Tab navigation ── */}
         <div
           role="tablist"
           aria-label="Member categories"
-          className="mb-12 flex w-full flex-col gap-2 rounded-2xl border border-border/80 bg-card/60 p-1.5 backdrop-blur-sm sm:flex-row"
+          className="mb-6 flex w-full flex-col gap-2 rounded-2xl border border-border/80 bg-card/60 p-1.5 backdrop-blur-sm sm:flex-row"
         >
           {tabs.map((tab) => {
             const Icon = tab.icon
@@ -253,7 +253,7 @@ export function MembersSection() {
         />
 
         {/* ── Join CTA ── */}
-        <div className="animate-reveal mt-20 rounded-2xl border border-border bg-gradient-to-br from-secondary/80 to-card p-8 text-center backdrop-blur-sm sm:p-12">
+        <div className="mt-20 rounded-2xl border border-border bg-gradient-to-br from-secondary/80 to-card p-8 text-center backdrop-blur-sm sm:p-12">
           <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-[#F26522]/10 text-[#F26522]">
             <Users className="size-7" />
           </div>

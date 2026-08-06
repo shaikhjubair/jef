@@ -40,7 +40,7 @@ export function HeroSection() {
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-20 pt-28 sm:px-6 lg:px-8 lg:pb-28 lg:pt-32">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           {/* Left: copy */}
-          <div className="animate-rise">
+          <div className="">
             <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-medium tracking-wide text-gold-soft">
               <span className="size-1.5 rounded-full bg-gold" />
               {org.university}
@@ -74,7 +74,7 @@ export function HeroSection() {
           </div>
 
           {/* Right: glassmorphism stats card */}
-          <div className="animate-rise [animation-delay:120ms] flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
             
             {activeEvent && activeEvent.isRegistrationOpen && (
               <div className="relative overflow-hidden rounded-2xl border border-[#F26522]/30 bg-[#F26522]/10 p-4 shadow-[0_0_20px_rgba(242,101,34,0.15)] backdrop-blur-xl transition-all duration-300 hover:border-[#F26522]/50 hover:shadow-[0_0_30px_rgba(242,101,34,0.25)]">

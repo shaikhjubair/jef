@@ -46,21 +46,21 @@ export function ExecutiveOrgChart({ onMemberClick }: ExecutiveOrgChartProps) {
 
       <div className="relative flex flex-col items-center">
         {/* Tier 1 — President */}
-        <div className="animate-reveal flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <MemberCard member={president} onClick={() => onMemberClick?.(president)} />
         </div>
 
         <OrgConnector />
 
         {/* Tier 2 — Vice President */}
-        <div className="animate-reveal animate-reveal-delay-1 flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <MemberCard member={vicePresident} onClick={() => onMemberClick?.(vicePresident)} />
         </div>
 
         <OrgConnector />
 
         {/* Tier 3 — Secretaries & Treasurer */}
-        <TierRow className="animate-reveal animate-reveal-delay-1">
+        <TierRow className="">
           {tier3.map((member) => (
             <MemberCard key={member.id} member={member} onClick={() => onMemberClick?.(member)} />
           ))}
@@ -69,7 +69,7 @@ export function ExecutiveOrgChart({ onMemberClick }: ExecutiveOrgChartProps) {
         <OrgConnector />
 
         {/* Tier 4 — Joint & Organizational Secretary */}
-        <TierRow className="animate-reveal animate-reveal-delay-2">
+        <TierRow className="">
           {tier4.map((member) => (
             <MemberCard key={member.id} member={member} onClick={() => onMemberClick?.(member)} />
           ))}
@@ -78,7 +78,7 @@ export function ExecutiveOrgChart({ onMemberClick }: ExecutiveOrgChartProps) {
         <OrgConnector className="mb-2" />
 
         {/* Tier 5 — Department groups */}
-        <div className="animate-reveal animate-reveal-delay-3 w-full space-y-10 pt-2">
+        <div className="w-full space-y-10 pt-2">
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-navy-soft">
