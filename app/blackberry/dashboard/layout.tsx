@@ -20,6 +20,7 @@ export default async function DashboardLayout({
     { label: 'Overview', href: '/blackberry/dashboard', icon: LayoutDashboard },
     { label: 'Manage Events', href: '/blackberry/dashboard?tab=events', icon: Calendar },
     { label: 'Manage News', href: '/blackberry/dashboard?tab=news', icon: FileText },
+    { label: 'Manage Members', href: '/blackberry/dashboard?tab=members', icon: Users },
     { label: 'Applications', href: '/blackberry/dashboard?tab=applications', icon: Users },
   ]
 

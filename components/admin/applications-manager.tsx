@@ -17,21 +17,19 @@ type Application = {
 export function ApplicationsManager() {
   const [applications, setApplications] = useState<Application[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-
-  // Form State (Add Member)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
 
   const fetchApplications = async () => {
     setIsLoading(true)
-    const { data, error } = await supabase.from('applications').select('*').order('created_at', { ascending: false })
-    if (data && !error) {
-      setApplications(data as Application[])
+    try {
+      const { data, error } = await supabase.from('applications').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      if (data) setApplications(data as Application[])
+    } catch (err: any) {
+      alert('Database Error (Fetch Applications): ' + err.message)
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -42,44 +40,14 @@ export function ApplicationsManager() {
     // Optimistic UI update
     setApplications(apps => apps.map(app => app.application_id === appId ? { ...app, status: newStatus } : app))
     
-    const { error } = await supabase.from('applications').update({ status: newStatus }).eq('application_id', appId)
-    if (error) {
-      alert('Failed to update status: ' + error.message)
-      // Revert optimistic update
-      fetchApplications()
-    } else {
-      // Show simple toast or console log for success
+    try {
+      const { error } = await supabase.from('applications').update({ status: newStatus }).eq('application_id', appId)
+      if (error) throw error
       console.log(`Updated ${appId} to ${newStatus}`)
+    } catch (err: any) {
+      alert('Database Error (Update Status): ' + err.message)
+      fetchApplications()
     }
-  }
-
-  const handleAddMember = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSaving(true)
-
-    const randomId = Math.random().toString(36).substring(2, 8).toUpperCase()
-    const newAppId = `JEF-MB-${randomId}`
-
-    const payload = {
-      application_id: newAppId,
-      name,
-      email,
-      type: 'Member',
-      status: 'Approved',
-    }
-
-    const { data, error } = await supabase.from('applications').insert([payload]).select().single()
-    
-    if (error) {
-      alert('Failed to add member: ' + error.message)
-    } else if (data) {
-      alert('Member added successfully!')
-      setApplications([data as Application, ...applications])
-      setIsModalOpen(false)
-      setName('')
-      setEmail('')
-    }
-    setIsSaving(false)
   }
 
   const filteredApps = applications.filter(app => 
@@ -107,10 +75,6 @@ export function ApplicationsManager() {
               className="pl-9 pr-4 py-2 rounded-xl border border-border focus:border-[#F26522] outline-none text-sm w-full sm:w-64"
             />
           </div>
-          <button onClick={() => setIsModalOpen(true)} className="flex shrink-0 items-center gap-2 bg-[#F26522] text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-[#F26522]/20 hover:bg-[#F26522]/90 transition-all">
-            <Plus className="size-4" />
-            Add Member
-          </button>
         </div>
       </div>
 
@@ -185,45 +149,6 @@ export function ApplicationsManager() {
                 No applications match your search query.
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Modal - Add Member */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-navy-deep/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
-          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-white z-10">
-              <h3 className="text-xl font-bold text-navy">Directly Add Member</h3>
-              <button onClick={() => setIsModalOpen(false)} className="size-8 flex items-center justify-center rounded-full hover:bg-secondary text-muted-foreground">✕</button>
-            </div>
-            
-            <form onSubmit={handleAddMember} className="p-6 space-y-4">
-              <p className="text-sm text-muted-foreground mb-4">
-                This will create a new approved member record immediately without them needing to apply.
-              </p>
-              
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-navy">Full Name</label>
-                <input required type="text" value={name} onChange={e => setName(e.target.value)} className="w-full px-4 py-2.5 rounded-xl border border-border focus:border-[#F26522] outline-none" />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-navy">Email Address</label>
-                <input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-2.5 rounded-xl border border-border focus:border-[#F26522] outline-none" />
-              </div>
-
-              <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl font-bold text-muted-foreground hover:bg-secondary transition-colors">
-                  Cancel
-                </button>
-                <button type="submit" disabled={isSaving} className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-[#F26522] text-white hover:bg-[#F26522]/90 transition-colors disabled:opacity-50">
-                  {isSaving && <Loader2 className="size-4 animate-spin" />}
-                  Add Member
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

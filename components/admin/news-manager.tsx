@@ -29,11 +29,15 @@ export function NewsManager() {
 
   const fetchNews = async () => {
     setIsLoading(true)
-    const { data, error } = await supabase.from('news').select('*').order('published_at', { ascending: false })
-    if (data && !error) {
-      setNews(data as NewsArticle[])
+    try {
+      const { data, error } = await supabase.from('news').select('*').order('published_at', { ascending: false })
+      if (error) throw error
+      if (data) setNews(data as NewsArticle[])
+    } catch (err: any) {
+      alert('Database Error (Fetch News): ' + err.message)
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -71,37 +75,39 @@ export function NewsManager() {
       published,
     }
 
-    if (editingNews) {
-      const { error } = await supabase.from('news').update(payload).eq('id', editingNews.id)
-      if (error) {
-        alert('Failed to update article: ' + error.message)
-      } else {
+    try {
+      if (editingNews) {
+        const { error } = await supabase.from('news').update(payload).eq('id', editingNews.id)
+        if (error) throw error
         alert('Article updated successfully!')
         setNews(news.map(n => n.id === editingNews.id ? { ...n, ...payload } : n))
         setIsModalOpen(false)
+      } else {
+        const { data, error } = await supabase.from('news').insert([payload]).select().single()
+        if (error) throw error
+        if (data) {
+          alert('Article created successfully!')
+          setNews([data as NewsArticle, ...news])
+          setIsModalOpen(false)
+        }
       }
-    } else {
-      const { data, error } = await supabase.from('news').insert([payload]).select().single()
-      if (error) {
-        alert('Failed to create article: ' + error.message)
-      } else if (data) {
-        alert('Article created successfully!')
-        setNews([data as NewsArticle, ...news])
-        setIsModalOpen(false)
-      }
+    } catch (err: any) {
+      alert('Database Error (Save News): ' + err.message)
+    } finally {
+      setIsSaving(false)
     }
-    setIsSaving(false)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this article?')) return
 
-    const { error } = await supabase.from('news').delete().eq('id', id)
-    if (error) {
-      alert('Failed to delete article: ' + error.message)
-    } else {
+    try {
+      const { error } = await supabase.from('news').delete().eq('id', id)
+      if (error) throw error
       alert('Article deleted successfully.')
       setNews(news.filter(n => n.id !== id))
+    } catch (err: any) {
+      alert('Database Error (Delete News): ' + err.message)
     }
   }
 

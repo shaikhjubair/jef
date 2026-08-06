@@ -128,36 +128,40 @@ export default function EventsArchive() {
     async function fetchEvents() {
       setIsLoading(true)
       setFetchError(null)
-      const { data, error } = await supabase.from('events').select('*').order('date', { ascending: false })
-      if (!error && data) {
-        const mappedEvents: Event[] = data.map(d => ({
-          id: d.id,
-          title: d.title,
-          date: d.date,
-          dateLabel: d.dateLabel || new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d.date)),
-          description: d.description,
-          image: d.image,
-          category: d.category,
-          excerpt: d.excerpt,
-          isRegistrationOpen: d.is_registration_open ?? d.isRegistrationOpen,
-          requiresRegistration: d.requires_registration ?? d.requiresRegistration,
-          registrationDeadline: d.registration_deadline ?? d.registrationDeadline,
-          registration: d.requires_registration ?? d.requiresRegistration ? {
-            isTeamBased: d.is_team_based ?? d.isTeamBased,
-            maxTeamMembers: d.max_team_members ?? d.maxTeamMembers,
-            requireTeamName: d.require_team_name ?? d.requireTeamName,
-            requireTeamIcon: d.require_team_icon ?? d.requireTeamIcon,
-            requireUniversityID: d.require_university_id ?? d.requireUniversityID,
-            requiresPayment: d.requires_payment ?? d.requiresPayment,
-          } : undefined,
-          extendedDetails: d.extendedDetails || d.extended_details
-        }))
-        setEvents(mappedEvents)
-      } else if (error) {
-        console.error('Error fetching events:', error)
-        setFetchError('Failed to load events. Please try again later.')
+      try {
+        const { data, error } = await supabase.from('events').select('*').order('date', { ascending: false })
+        if (error) throw error
+        if (data) {
+          const mappedEvents: Event[] = data.map(d => ({
+            id: d.id,
+            title: d.title,
+            date: d.date,
+            dateLabel: d.dateLabel || new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d.date)),
+            description: d.description,
+            image: d.image,
+            category: d.category,
+            excerpt: d.excerpt,
+            isRegistrationOpen: d.is_registration_open ?? d.isRegistrationOpen,
+            requiresRegistration: d.requires_registration ?? d.requiresRegistration,
+            registrationDeadline: d.registration_deadline ?? d.registrationDeadline,
+            registration: d.requires_registration ?? d.requiresRegistration ? {
+              isTeamBased: d.is_team_based ?? d.isTeamBased,
+              maxTeamMembers: d.max_team_members ?? d.maxTeamMembers,
+              requireTeamName: d.require_team_name ?? d.requireTeamName,
+              requireTeamIcon: d.require_team_icon ?? d.requireTeamIcon,
+              requireUniversityID: d.require_university_id ?? d.requireUniversityID,
+              requiresPayment: d.requires_payment ?? d.requiresPayment,
+            } : undefined,
+            extendedDetails: d.extendedDetails || d.extended_details
+          }))
+          setEvents(mappedEvents)
+        }
+      } catch (err: any) {
+        console.error('Error fetching events:', err)
+        setFetchError('Failed to load events: ' + err.message)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
     fetchEvents()
   }, [])

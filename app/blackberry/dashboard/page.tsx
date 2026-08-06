@@ -5,6 +5,7 @@ import { LayoutDashboard, Calendar, FileText, Users } from 'lucide-react'
 import { EventsManager } from '@/components/admin/events-manager'
 import { NewsManager } from '@/components/admin/news-manager'
 import { ApplicationsManager } from '@/components/admin/applications-manager'
+import { MembersManager } from '@/components/admin/members-manager'
 
 export default function DashboardPage() {
   const searchParams = useSearchParams()
@@ -16,6 +17,8 @@ export default function DashboardPage() {
         return <EventsManager />
       case 'news':
         return <NewsManager />
+      case 'members':
+        return <MembersManager />
       case 'applications':
         return <ApplicationsManager />
       case 'overview':

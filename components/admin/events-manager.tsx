@@ -35,11 +35,15 @@ export function EventsManager() {
 
   const fetchEvents = async () => {
     setIsLoading(true)
-    const { data, error } = await supabase.from('events').select('*').order('date', { ascending: false })
-    if (data && !error) {
-      setEvents(data as Event[])
+    try {
+      const { data, error } = await supabase.from('events').select('*').order('date', { ascending: false })
+      if (error) throw error
+      if (data) setEvents(data as Event[])
+    } catch (err: any) {
+      alert('Database Error (Fetch Events): ' + err.message)
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -86,37 +90,39 @@ export function EventsManager() {
       is_registration_open: isRegistrationOpen,
     }
 
-    if (editingEvent) {
-      const { error } = await supabase.from('events').update(payload).eq('id', editingEvent.id)
-      if (error) {
-        alert('Failed to update event: ' + error.message)
-      } else {
+    try {
+      if (editingEvent) {
+        const { error } = await supabase.from('events').update(payload).eq('id', editingEvent.id)
+        if (error) throw error
         alert('Event updated successfully!')
         setEvents(events.map(ev => ev.id === editingEvent.id ? { ...ev, ...payload } : ev))
         setIsModalOpen(false)
+      } else {
+        const { data, error } = await supabase.from('events').insert([payload]).select().single()
+        if (error) throw error
+        if (data) {
+          alert('Event created successfully!')
+          setEvents([data as Event, ...events])
+          setIsModalOpen(false)
+        }
       }
-    } else {
-      const { data, error } = await supabase.from('events').insert([payload]).select().single()
-      if (error) {
-        alert('Failed to create event: ' + error.message)
-      } else if (data) {
-        alert('Event created successfully!')
-        setEvents([data as Event, ...events])
-        setIsModalOpen(false)
-      }
+    } catch (err: any) {
+      alert('Database Error (Save Event): ' + err.message)
+    } finally {
+      setIsSaving(false)
     }
-    setIsSaving(false)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) return
 
-    const { error } = await supabase.from('events').delete().eq('id', id)
-    if (error) {
-      alert('Failed to delete event: ' + error.message)
-    } else {
+    try {
+      const { error } = await supabase.from('events').delete().eq('id', id)
+      if (error) throw error
       alert('Event deleted successfully.')
       setEvents(events.filter(ev => ev.id !== id))
+    } catch (err: any) {
+      alert('Database Error (Delete Event): ' + err.message)
     }
   }
 

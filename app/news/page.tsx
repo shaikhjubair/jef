@@ -19,28 +19,33 @@ export default function NewsPage() {
     async function fetchNews() {
       setIsLoading(true)
       setFetchError(null)
-      const { data, error } = await supabase
-        .from('news')
-        .select('*')
-        .eq('published', true)
-        .order('published_at', { ascending: false })
+      try {
+        const { data, error } = await supabase
+          .from('news')
+          .select('*')
+          .eq('published', true)
+          .order('published_at', { ascending: false })
 
-      if (!error && data) {
-        const mappedNews: NewsArticle[] = data.map(d => ({
-          id: d.id,
-          title: d.title,
-          date: d.published_at,
-          dateLabel: new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d.published_at)),
-          content: d.content,
-          coverImage: d.cover_image ?? d.coverImage,
-          published: d.published,
-        }))
-        setNews(mappedNews)
-      } else if (error) {
-        console.error('Error fetching news:', error)
-        setFetchError('Failed to load news articles. Please try again later.')
+        if (error) throw error
+
+        if (data) {
+          const mappedNews: NewsArticle[] = data.map(d => ({
+            id: d.id,
+            title: d.title,
+            date: d.published_at,
+            dateLabel: new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d.published_at)),
+            content: d.content,
+            coverImage: d.cover_image ?? d.coverImage,
+            published: d.published,
+          }))
+          setNews(mappedNews)
+        }
+      } catch (err: any) {
+        console.error('Error fetching news:', err)
+        setFetchError('Failed to load news articles: ' + err.message)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
     fetchNews()
   }, [])
