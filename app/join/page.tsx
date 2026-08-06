@@ -4,6 +4,7 @@ import React, { useState, useReducer, useCallback, ChangeEvent } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import emailjs from '@emailjs/browser'
+import { supabase } from '@/lib/supabase'
 import {
   CheckCircle2, ChevronRight, ChevronLeft, Clock, Loader2, Wallet, User, BookOpen,
   Mail, Phone, Droplet, Building2, Hash, Calendar, Camera, MessageSquare, Search,
@@ -224,6 +225,25 @@ export default function JoinPage() {
           }
         )
         console.log(`[EmailJS] Sent confirmation email to ${form.email}. Application ID: ${newId}`)
+        
+        // Supabase Insertion
+        const { error: dbError } = await supabase
+          .from('applications')
+          .insert([
+            {
+              application_id: newId,
+              name: form.full_name,
+              email: form.email,
+              type: 'Member',
+              status: 'Pending'
+            }
+          ])
+          
+        if (dbError) {
+          console.error('[Supabase] Error inserting application:', dbError)
+        } else {
+          console.log('[Supabase] Successfully inserted application record.')
+        }
       } catch (err) {
         console.error('[EmailJS] Error sending email:', err)
       }
@@ -231,7 +251,7 @@ export default function JoinPage() {
       setIsLoading(false)
       setIsSubmitted(true)
     }
-  }, [validateStep3, form.email])
+  }, [validateStep3, form.email, form.full_name])
 
   if (!isRecruitmentOpen) {
     return (

@@ -3,6 +3,7 @@
 import { useState, useCallback, useId } from 'react'
 import { Users, User, Hash, Mail, ChevronRight, Loader2, CheckCircle2, X, Building2, Wallet } from 'lucide-react'
 import emailjs from '@emailjs/browser'
+import { supabase } from '@/lib/supabase'
 import type { EventRegistrationConfig } from '@/data/events'
 import { cn } from '@/lib/utils'
 
@@ -236,6 +237,25 @@ export function DynamicEventForm({
         }
       )
       console.log(`[EmailJS] Sent confirmation email to ${members[0].email}. Application ID: ${newId}`)
+
+      // Supabase Insertion
+      const { error: dbError } = await supabase
+        .from('applications')
+        .insert([
+          {
+            application_id: newId,
+            name: members[0].name,
+            email: members[0].email,
+            type: 'Event',
+            status: 'Pending'
+          }
+        ])
+        
+      if (dbError) {
+        console.error('[Supabase] Error inserting application:', dbError)
+      } else {
+        console.log('[Supabase] Successfully inserted application record.')
+      }
     } catch (err) {
       console.error('[EmailJS] Error sending email:', err)
     }
