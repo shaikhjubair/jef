@@ -216,10 +216,12 @@ export default function JoinPage() {
           'template_te8q0n7',
           {
             to_name: form.full_name,
-            to_email: form.email,
+            email: form.email,
             application_id: newId,
           },
-          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+          {
+            publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+          }
         )
         console.log(`[EmailJS] Sent confirmation email to ${form.email}. Application ID: ${newId}`)
       } catch (err) {

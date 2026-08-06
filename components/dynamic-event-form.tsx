@@ -228,10 +228,12 @@ export function DynamicEventForm({
         'template_te8q0n7',
         {
           to_name: members[0].name,
-          to_email: members[0].email,
+          email: members[0].email,
           application_id: newId,
         },
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+        {
+          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+        }
       )
       console.log(`[EmailJS] Sent confirmation email to ${members[0].email}. Application ID: ${newId}`)
     } catch (err) {
